@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Banking System</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #6b73ff, #000dff);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+        h1 {
+            text-align: center;
+            color: #fff;
+            margin-bottom: 20px;
+            animation: fadeInDown 1s ease-out;
+        }
+        .container {
+            max-width: 600px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+            animation: scaleUp 0.5s ease-out;
+        }
+        button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: none;
+            background: linear-gradient(90deg, #ff7eb3, #ff758c);
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+        input::placeholder {
+            color: #ddd;
+        }
+        #output {
+            margin-top: 20px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            text-align: center;
+            animation: fadeInUp 0.5s ease-out;
+        }
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        @keyframes scaleUp {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <h1>Advanced Banking System</h1>
+        <div id="menu">
+            <button onclick="showCreateAccount()">Create Account</button>
+            <button onclick="showDeposit()">Deposit</button>
+            <button onclick="showWithdraw()">Withdraw</button>
+            <button onclick="showAccountDetails()">View Account Details</button>
+        </div>
+
+        <div id="form-container" style="display: none;">
+            <form id="form">
+                <div id="dynamic-fields"></div>
+                <button type="button" onclick="submitForm()">Submit</button>
+                <button type="button" onclick="goBack()">Back</button>
+            </form>
+        </div>
+
+        <div id="output"></div>
+    </div>
+
+    <script>
+        const accounts = [];
+        let currentAction = "";
+
+        function showCreateAccount() {
+            currentAction = "createAccount";
+            document.getElementById("menu").style.display = "none";
+            document.getElementById("form-container").style.display = "block";
+            document.getElementById("dynamic-fields").innerHTML = `
+                <input type="text" id="name" placeholder="Enter your name" required>
+                <input type="number" id="initialDeposit" placeholder="Enter initial deposit" required>
+            `;
+        }
+
+        function showDeposit() {
+            currentAction = "deposit";
+            document.getElementById("menu").style.display = "none";
+            document.getElementById("form-container").style.display = "block";
+            document.getElementById("dynamic-fields").innerHTML = `
+                <input type="number" id="accountNumber" placeholder="Enter account number" required>
+                <input type="number" id="amount" placeholder="Enter deposit amount" required>
+            `;
+        }
+
+        function showWithdraw() {
+            currentAction = "withdraw";
+            document.getElementById("menu").style.display = "none";
+            document.getElementById("form-container").style.display = "block";
+            document.getElementById("dynamic-fields").innerHTML = `
+                <input type="number" id="accountNumber" placeholder="Enter account number" required>
+                <input type="number" id="amount" placeholder="Enter withdrawal amount" required>
+            `;
+        }
+
+        function showAccountDetails() {
+            currentAction = "viewAccount";
+            document.getElementById("menu").style.display = "none";
+            document.getElementById("form-container").style.display = "block";
+            document.getElementById("dynamic-fields").innerHTML = `
+                <input type="number" id="accountNumber" placeholder="Enter account number" required>
+            `;
+        }
+
+        function goBack() {
+            document.getElementById("menu").style.display = "block";
+            document.getElementById("form-container").style.display = "none";
+            document.getElementById("output").innerHTML = "";
+        }
+
+        function submitForm() {
+            const output = document.getElementById("output");
+            output.innerHTML = "";
+
+            if (currentAction === "createAccount") {
+                const name = document.getElementById("name").value;
+                const initialDeposit = parseFloat(document.getElementById("initialDeposit").value);
+
+                if (name && initialDeposit >= 0) {
+                    const accountNumber = accounts.length + 1;
+                    accounts.push({ accountNumber, name, balance: initialDeposit });
+                    output.innerHTML = `Account created successfully! Account Number: ${accountNumber}`;
+                } else {
+                    output.innerHTML = "Please provide valid details.";
+                }
+
+            } else if (currentAction === "deposit") {
+                const accountNumber = parseInt(document.getElementById("accountNumber").value);
+                const amount = parseFloat(document.getElementById("amount").value);
+
+                if (accountNumber > 0 && accountNumber <= accounts.length && amount > 0) {
+                    accounts[accountNumber - 1].balance += amount;
+                    output.innerHTML = "Deposit successful.";
+                } else {
+                    output.innerHTML = "Invalid account number or amount.";
+                }
+
+            } else if (currentAction === "withdraw") {
+                const accountNumber = parseInt(document.getElementById("accountNumber").value);
+                const amount = parseFloat(document.getElementById("amount").value);
+
+                if (accountNumber > 0 && accountNumber <= accounts.length && amount > 0 && accounts[accountNumber - 1].balance >= amount) {
+                    accounts[accountNumber - 1].balance -= amount;
+                    output.innerHTML = "Withdrawal successful.";
+                } else {
+                    output.innerHTML = "Invalid account number, amount, or insufficient funds.";
+                }
+
+            } else if (currentAction === "viewAccount") {
+                const accountNumber = parseInt(document.getElementById("accountNumber").value);
+
+                if (accountNumber > 0 && accountNumber <= accounts.length) {
+                    const account = accounts[accountNumber - 1];
+                    output.innerHTML = `
+                        <p><strong>Account Number:</strong> ${account.accountNumber}</p>
+                        <p><strong>Name:</strong> ${account.name}</p>
+                        <p><strong>Balance:</strong> ${account.balance}</p>
+                    `;
+                } else {
+                    output.innerHTML = "Invalid account number.";
+                }
+            }
+        }
+    </script>
+</body>
+</html>
